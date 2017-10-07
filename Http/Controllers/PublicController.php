@@ -1,7 +1,11 @@
-<?php namespace Modules\Page\Http\Controllers;
+<?php
+
+namespace Modules\Page\Http\Controllers;
 
 use Illuminate\Contracts\Foundation\Application;
 use Modules\Core\Http\Controllers\BasePublicController;
+use Modules\Menu\Repositories\MenuItemRepository;
+use Modules\Page\Entities\Page;
 use Modules\Page\Repositories\PageRepository;
 
 class PublicController extends BasePublicController
@@ -28,7 +32,7 @@ class PublicController extends BasePublicController
      */
     public function uri($slug)
     {
-        $page = $this->page->findBySlugInLocale($slug, $this->locale);
+        $page = $this->findPageForSlug($slug);
 
         $this->throw404IfNotFound($page);
 
@@ -52,6 +56,23 @@ class PublicController extends BasePublicController
     }
 
     /**
+     * Find a page for the given slug.
+     * The slug can be a 'composed' slug via the Menu
+     * @param string $slug
+     * @return Page
+     */
+    private function findPageForSlug($slug)
+    {
+        $menuItem = app(MenuItemRepository::class)->findByUriInLanguage($slug, locale());
+
+        if ($menuItem) {
+            return $this->page->find($menuItem->ID);
+        }
+
+        return $this->page->findBySlug($slug);
+    }
+
+    /**
      * Return the template for the given page
      * or the default template if none found
      * @param $page
@@ -59,7 +80,7 @@ class PublicController extends BasePublicController
      */
     private function getTemplateForPage($page)
     {
-        return (view()->exists($page->template)) ? $page->template : 'default';
+        return (view()->exists($page->TEMPLATE)) ? $page->TEMPLATE : 'default';
     }
 
     /**

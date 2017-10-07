@@ -1,7 +1,11 @@
-<?php namespace Modules\Page\Repositories\Eloquent;
+<?php
+
+namespace Modules\Page\Repositories\Eloquent;
 
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Core\Repositories\Eloquent\EloquentBaseRepository;
+use Modules\Page\Events\PageIsCreating;
+use Modules\Page\Events\PageIsUpdating;
 use Modules\Page\Events\PageWasCreated;
 use Modules\Page\Events\PageWasDeleted;
 use Modules\Page\Events\PageWasUpdated;
@@ -9,13 +13,14 @@ use Modules\Page\Repositories\PageRepository;
 
 class EloquentPageRepository extends EloquentBaseRepository implements PageRepository
 {
+
     /**
      * Find the page set as homepage
      * @return object
      */
     public function findHomepage()
     {
-        return $this->model->where('is_home', 1)->first();
+        return $this->model->where('IS_HOME', 1)->first();
     }
 
     /**
@@ -33,12 +38,16 @@ class EloquentPageRepository extends EloquentBaseRepository implements PageRepos
      */
     public function create($data)
     {
-        if (array_get($data, 'is_home') === '1') {
+        if (array_get($data, 'IS_HOME') === '1') {
             $this->removeOtherHomepage();
         }
+
+        event($event = new PageIsCreating($data));
         $page = $this->model->create($data);
 
-        event(new PageWasCreated($page->id, $data));
+        event(new PageWasCreated($page->ID, $data));
+
+        $page->setTags(array_get($data, 'tags', []));
 
         return $page;
     }
@@ -50,21 +59,27 @@ class EloquentPageRepository extends EloquentBaseRepository implements PageRepos
      */
     public function update($model, $data)
     {
-        if (array_get($data, 'is_home') === '1') {
+        if (array_get($data, 'IS_HOME') === '1') {
             $this->removeOtherHomepage($model->id);
         }
-        $model->update($data);
 
-        event(new PageWasUpdated($model->id, $data));
+        event($event = new PageIsUpdating($model, $data));
+        $model->update($event->getAttributes());
+
+        event(new PageWasUpdated($model->ID, $data));
+
+        $model->setTags(array_get($data, 'tags', []));
 
         return $model;
     }
 
-    public function destroy($model)
+    public function destroy($page)
     {
-        event(new PageWasDeleted($model));
+        $page->untag();
 
-        return $model->delete();
+        event(new PageWasDeleted($page));
+
+        return $page->delete();
     }
 
     /**
@@ -74,14 +89,8 @@ class EloquentPageRepository extends EloquentBaseRepository implements PageRepos
      */
     public function findBySlugInLocale($slug, $locale)
     {
-        if (method_exists($this->model, 'translations')) {
-            return $this->model->whereHas('translations', function (Builder $q) use ($slug, $locale) {
-                $q->where('slug', $slug);
-                $q->where('locale', $locale);
-            })->with('translations')->first();
-        }
 
-        return $this->model->where('slug', $slug)->where('locale', $locale)->first();
+        return $this->model->where('SLUG', $slug)->where('LOCALE', $locale)->first();
     }
 
     /**
@@ -94,11 +103,11 @@ class EloquentPageRepository extends EloquentBaseRepository implements PageRepos
         if ($homepage === null) {
             return;
         }
-        if ($pageId === $homepage->id) {
+        if ($pageId === $homepage->ID) {
             return;
         }
 
-        $homepage->is_home = 0;
+        $homepage->IS_HOME = 0;
         $homepage->save();
     }
 }

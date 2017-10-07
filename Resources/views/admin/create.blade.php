@@ -11,28 +11,25 @@
     </ol>
 @stop
 
-@section('styles')
+@push('css-stack')
     <style>
         .checkbox label {
             padding-left: 0;
         }
     </style>
-@stop
+@endpush
 
 @section('content')
     {!! Form::open(['route' => ['admin.page.page.store'], 'method' => 'post']) !!}
     <div class="row">
         <div class="col-md-10">
             <div class="nav-tabs-custom">
-                @include('partials.form-tab-headers', ['fields' => ['title', 'body']])
+
                 <div class="tab-content">
-                    <?php $i = 0; ?>
-                    <?php foreach (LaravelLocalization::getSupportedLocales() as $locale => $language): ?>
-                    <?php ++$i; ?>
-                    <div class="tab-pane {{ App::getLocale() == $locale ? 'active' : '' }}" id="tab_{{ $i }}">
-                        @include('page::admin.partials.create-fields', ['lang' => $locale])
-                    </div>
-                    <?php endforeach; ?>
+
+                        @include('page::admin.partials.create-fields', ['lang' => ''])
+
+
                     <?php if (config('asgard.page.config.partials.normal.create') !== []): ?>
                         <?php foreach (config('asgard.page.config.partials.normal.create') as $partial): ?>
                             @include($partial)
@@ -41,7 +38,6 @@
 
                     <div class="box-footer">
                         <button type="submit" class="btn btn-primary btn-flat">{{ trans('core::core.button.create') }}</button>
-                        <button class="btn btn-default btn-flat" name="button" type="reset">{{ trans('core::core.button.reset') }}</button>
                         <a class="btn btn-danger pull-right btn-flat" href="{{ URL::route('admin.page.page.index')}}"><i class="fa fa-times"></i> {{ trans('core::core.button.cancel') }}</a>
                     </div>
                 </div>
@@ -50,24 +46,27 @@
         <div class="col-md-2">
             <div class="box box-primary">
                 <div class="box-body">
-                    <div class="checkbox{{ $errors->has('is_home') ? ' has-error' : '' }}">
-                        <input type="hidden" name="is_home" value="0">
-                        <label for="is_home">
-                            <input id="is_home"
-                                   name="is_home"
+                    <div class="checkbox{{ $errors->has('IS_HOME') ? ' has-error' : '' }}">
+                        <input type="hidden" name="IS_HOME" value="0">
+                        <label for="IS_HOME">
+                            <input id="IS_HOME"
+                                   name="IS_HOME"
                                    type="checkbox"
                                    class="flat-blue"
                                    value="1" />
                             {{ trans('page::pages.form.is homepage') }}
-                            {!! $errors->first('is_home', '<span class="help-block">:message</span>') !!}
+                            {!! $errors->first('IS_HOME', '<span class="help-block">:message</span>') !!}
                         </label>
                     </div>
                     <hr/>
-                    <div class='form-group{{ $errors->has("template") ? ' has-error' : '' }}'>
-                        {!! Form::label("template", trans('page::pages.form.template')) !!}
-                        {!! Form::select("template", $all_templates, old("template", 'default'), ['class' => "form-control", 'placeholder' => trans('page::pages.form.template')]) !!}
-                        {!! $errors->first("template", '<span class="help-block">:message</span>') !!}
+                    <div class='form-group{{ $errors->has("TEMPLATE") ? ' has-error' : '' }}'>
+                        {!! Form::label("TEMPLATE", trans('page::pages.form.template')) !!}
+                        {!! Form::select("TEMPLATE", $all_templates, old("template", 'default'), ['class' => "form-control", 'placeholder' => trans('page::pages.form.template')]) !!}
+                        {!! $errors->first("TEMPLATE", '<span class="help-block">:message</span>') !!}
                     </div>
+                    <hr>
+                <?php //    @tags('asgardcms/page')
+                ?>
                 </div>
             </div>
         </div>
@@ -86,7 +85,7 @@
     </dl>
 @stop
 
-@section('scripts')
+@push('js-stack')
     <script>
         $( document ).ready(function() {
             $(document).keypressAction({
@@ -100,4 +99,4 @@
             });
         });
     </script>
-@stop
+@endpush

@@ -25,6 +25,15 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
+                  <?php
+                    foreach($pages as $p){
+
+                    //  echo "<pre>";
+                    //  print_r($p);
+                    //  echo "</pre>";
+                    }
+
+                   ?>
                     <table class="data-table table table-bordered table-hover">
                         <thead>
                         <tr>
@@ -40,29 +49,29 @@
                         <?php foreach ($pages as $page): ?>
                         <tr>
                             <td>
-                                <a href="{{ URL::route('admin.page.page.edit', [$page->id]) }}">
-                                    {{ $page->id }}
+                                <a href="{{ URL::route('admin.page.page.edit', [$page->ID]) }}">
+                                    {{ $page->ID }}
                                 </a>
                             </td>
                             <td>
-                                <a href="{{ URL::route('admin.page.page.edit', [$page->id]) }}">
-                                    {{ $page->title }}
+                                <a href="{{ URL::route('admin.page.page.edit', [$page->ID]) }}">
+                                    {{ $page->TITLE }}
                                 </a>
                             </td>
                             <td>
-                                <a href="{{ URL::route('admin.page.page.edit', [$page->id]) }}">
-                                    {{ $page->slug }}
+                                <a href="{{ URL::route('admin.page.page.edit', [$page->ID]) }}">
+                                    {{ $page->SLUG }}
                                 </a>
                             </td>
                             <td>
-                                <a href="{{ URL::route('admin.page.page.edit', [$page->id]) }}">
-                                    {{ $page->created_at }}
+                                <a href="{{ URL::route('admin.page.page.edit', [$page->ID]) }}">
+                                    {{ $page->IDATE }}
                                 </a>
                             </td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ URL::route('admin.page.page.edit', [$page->id]) }}" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
-                                    <button data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{{ route('admin.page.page.destroy', [$page->id]) }}" class="btn btn-danger btn-flat"><i class="fa fa-trash"></i></button>
+                                    <a href="{{ URL::route('admin.page.page.edit', [$page->ID]) }}" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></a>
+                                    <button data-toggle="modal" data-target="#modal-delete-confirmation" data-action-target="{{ route('admin.page.page.destroy', [$page->ID]) }}" class="btn btn-danger btn-flat"><i class="fa fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -98,7 +107,7 @@
     </dl>
 @stop
 
-@section('scripts')
+@push('js-stack')
     <?php $locale = App::getLocale(); ?>
     <script type="text/javascript">
         $( document ).ready(function() {
@@ -123,4 +132,4 @@
             });
         });
     </script>
-@stop
+@endpush

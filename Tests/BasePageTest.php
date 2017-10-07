@@ -1,5 +1,8 @@
-<?php namespace Modules\Page\Tests;
+<?php
 
+namespace Modules\Page\Tests;
+
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Sidebar\SidebarServiceProvider;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -7,9 +10,9 @@ use Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider;
 use Modules\Core\Providers\CoreServiceProvider;
 use Modules\Page\Providers\PageServiceProvider;
 use Modules\Page\Repositories\PageRepository;
+use Modules\Tag\Providers\TagServiceProvider;
+use Nwidart\Modules\LaravelModulesServiceProvider;
 use Orchestra\Testbench\TestCase;
-use Pingpong\Modules\ModulesServiceProvider;
-use Illuminate\Contracts\Console\Kernel;
 
 abstract class BasePageTest extends TestCase
 {
@@ -30,8 +33,9 @@ abstract class BasePageTest extends TestCase
     protected function getPackageProviders($app)
     {
         return [
-            ModulesServiceProvider::class,
+            LaravelModulesServiceProvider::class,
             CoreServiceProvider::class,
+            TagServiceProvider::class,
             PageServiceProvider::class,
             LaravelLocalizationServiceProvider::class,
             SidebarServiceProvider::class,
@@ -66,7 +70,6 @@ abstract class BasePageTest extends TestCase
         // Makes sure the migrations table is created
         $artisan->call('migrate', [
             '--database' => 'sqlite',
-            '--path'     => $migrationsPath,
         ]);
         // We empty all tables
         $artisan->call('migrate:reset', [
@@ -75,7 +78,10 @@ abstract class BasePageTest extends TestCase
         // Migrate
         $artisan->call('migrate', [
             '--database' => 'sqlite',
-            '--path'     => $migrationsPath,
+        ]);
+        $artisan->call('migrate', [
+            '--database' => 'sqlite',
+            '--path'     => 'Modules/Tag/Database/Migrations',
         ]);
     }
 }

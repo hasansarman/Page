@@ -1,25 +1,22 @@
-<?php namespace Modules\Page\Http\Requests;
+<?php
 
-use Modules\Core\Internationalisation\BaseFormRequest;
+namespace Modules\Page\Http\Requests;
 
-class UpdatePageRequest extends BaseFormRequest
+//use Modules\Core\Internationalisation\BaseFormRequest;
+use Illuminate\Foundation\Http\FormRequest;
+class UpdatePageRequest extends FormRequest
 {
-    protected $translationsAttributesKey = 'page::pages.validation.attributes';
+
 
     public function rules()
     {
         return [
-            'template' => 'required',
+          'TITLE' => 'required',
+          'BODY' => 'required',
+            'TEMPLATE' => 'required',
         ];
     }
 
-    public function translationRules()
-    {
-        return [
-            'title' => 'required',
-            'body' => 'required',
-        ];
-    }
 
     public function authorize()
     {
@@ -34,11 +31,5 @@ class UpdatePageRequest extends BaseFormRequest
         ];
     }
 
-    public function translationMessages()
-    {
-        return [
-            'title.required' => trans('page::messages.title is required'),
-            'body.required' => trans('page::messages.body is required'),
-        ];
-    }
+
 }

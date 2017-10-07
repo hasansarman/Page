@@ -1,45 +1,42 @@
-<?php namespace Modules\Page\Entities;
+<?php
 
-use Dimsav\Translatable\Translatable;
+namespace Modules\Page\Entities;
+
+
 use Illuminate\Database\Eloquent\Model;
+use Modules\Core\Traits\NamespacedEntity;
+use Modules\Tag\Contracts\TaggableInterface;
+use Modules\Tag\Traits\TaggableTrait;
 
-class Page extends Model
+class Page extends Model implements TaggableInterface
 {
-    use Translatable;
+    use  TaggableTrait, NamespacedEntity;
+    protected $primaryKey="ID";
+    const CREATED_AT = 'IDATE';
+    const UPDATED_AT = 'UDATE';
+    protected $table = 'pages';
 
-    protected $table = 'page__pages';
-    public $translatedAttributes = [
-        'page_id',
-        'title',
-        'slug',
-        'status',
-        'body',
-        'meta_title',
-        'meta_description',
-        'og_title',
-        'og_description',
-        'og_image',
-        'og_type',
-    ];
+
     protected $fillable = [
-        'is_home',
-        'template',
+        'IS_HOME',
+        'TEMPLATE',
         // Translatable fields
-        'page_id',
-        'title',
-        'slug',
-        'status',
-        'body',
-        'meta_title',
-        'meta_description',
-        'og_title',
-        'og_description',
-        'og_image',
-        'og_type',
+
+        'TITLE',
+        'SLUG',
+        'STATUS',
+        'BODY',
+        'META_TITLE',
+        'META_DESCRIPTION',
+        'OG_TITLE',
+        'OG_DESCRIPTION',
+        'OG_IMAGE',
+        'OG_TYPE',
     ];
     protected $casts = [
-        'is_home' => 'boolean',
+        'IS_HOME' => 'boolean',
     ];
+    protected static $entityNamespace = 'asgardcms/page';
 
     public function __call($method, $parameters)
     {

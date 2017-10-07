@@ -1,11 +1,12 @@
-<?php namespace Modules\Page\Http\Controllers\Admin;
+<?php
+
+namespace Modules\Page\Http\Controllers\Admin;
 
 use Modules\Core\Http\Controllers\Admin\AdminBaseController;
 use Modules\Page\Entities\Page;
 use Modules\Page\Http\Requests\CreatePageRequest;
 use Modules\Page\Http\Requests\UpdatePageRequest;
 use Modules\Page\Repositories\PageRepository;
-use Modules\Page\Events\PageWasDeleted;
 
 class PageController extends AdminBaseController
 {
@@ -19,12 +20,13 @@ class PageController extends AdminBaseController
         parent::__construct();
 
         $this->page = $page;
-        $this->assetPipeline->requireCss('icheck.blue.css');
     }
 
     public function index()
     {
-        $pages = $this->page->all();
+      $pages = $this->page->all();
+    //  print_r($this->page->translations());
+
 
         return view('page::admin.index', compact('pages'));
     }
@@ -36,8 +38,6 @@ class PageController extends AdminBaseController
      */
     public function create()
     {
-        $this->assetPipeline->requireJs('ckeditor.js');
-
         return view('page::admin.create');
     }
 
@@ -51,9 +51,8 @@ class PageController extends AdminBaseController
     {
         $this->page->create($request->all());
 
-        flash(trans('page::messages.page created'));
-
-        return redirect()->route('admin.page.page.index');
+        return redirect()->route('admin.page.page.index')
+            ->withSuccess(trans('page::messages.page created'));
     }
 
     /**
@@ -64,8 +63,6 @@ class PageController extends AdminBaseController
      */
     public function edit(Page $page)
     {
-        $this->assetPipeline->requireJs('ckeditor.js');
-
         return view('page::admin.edit', compact('page'));
     }
 
@@ -80,13 +77,13 @@ class PageController extends AdminBaseController
     {
         $this->page->update($page, $request->all());
 
-        flash(trans('page::messages.page updated'));
-
         if ($request->get('button') === 'index') {
-            return redirect()->route('admin.page.page.index');
+            return redirect()->route('admin.page.page.index')
+                ->withSuccess(trans('page::messages.page updated'));
         }
 
-        return redirect()->back();
+        return redirect()->back()
+            ->withSuccess(trans('page::messages.page updated'));
     }
 
     /**
@@ -99,8 +96,7 @@ class PageController extends AdminBaseController
     {
         $this->page->destroy($page);
 
-        flash(trans('page::messages.page deleted'));
-
-        return redirect()->route('admin.page.page.index');
+        return redirect()->route('admin.page.page.index')
+            ->withSuccess(trans('page::messages.page deleted'));
     }
 }
